@@ -116,12 +116,12 @@ def get_klines_futures(symbol, interval, start_date, end_date):
 def download_data():
 
     # Bullrun 2021
-    #start_date = "16.12.2020"
-    #end_date = "31.12.2021"
+    start_date = "16.12.2020"
+    end_date = "31.12.2021"
 
     # Bullrun 2024
-    start_date = "05.11.2024"
-    end_date = datetime.now().strftime("%d.%m.%Y")
+    #start_date = "05.11.2024"
+    #end_date = datetime.now().strftime("%d.%m.%Y")
 
     # Convert dates to milliseconds
     start_time = int(datetime.strptime(start_date, "%d.%m.%Y").timestamp() * 1000)
