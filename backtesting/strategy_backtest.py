@@ -1,10 +1,12 @@
+import os
 import pandas as pd
 import numpy as np
 from collections import defaultdict
 import matplotlib.pyplot as plt
 
 # Load data
-full_tab = pd.read_excel('trading_pairs_klines.xlsx')
+file_path = os.path.join('backtesting', 'trading_pairs_klines.xlsx')
+full_tab = pd.read_excel(file_path)
 initial_capital = 5000
 top_n = 30
 
