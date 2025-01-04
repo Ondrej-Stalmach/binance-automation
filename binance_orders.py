@@ -50,15 +50,11 @@ def get_account_status():
             formatted_positions.append({
                 "symbol": position.get("symbol"),
                 "positionAmt": float(position.get("positionAmt")),
-                "entryPrice": float(position.get("entryPrice")),
-                "markPrice": float(position.get("markPrice")),
-                "unRealizedProfit": float(position.get("unRealizedProfit")),
-                "liquidationPrice": float(position.get("liquidationPrice")),
-                "leverage": float(position.get("leverage")),
+                "unrealizedProfit": float(position.get("unrealizedProfit")),
             })
 
         balances = account_info.get("assets", [])
-        usdt_balance = next((float(b.get("availableBalance", 0)) for b in balances if b.get("asset") == "USDT"), 0.0)
+        usdt_balance = next((float(b.get("availableBalance", 0)) for b in balances if b.get("asset") == "BNFCR"), 0.0)
 
         return formatted_positions, usdt_balance
 
@@ -94,6 +90,7 @@ def sell_crypto_market(symbol, quantity):
         order = client.new_order(
             symbol=symbol,
             side="SELL",
+            positionSide='LONG',
             type="MARKET",
             quantity=quantity,
             recvWindow=6000
@@ -138,7 +135,7 @@ def buy_crypto_market(symbol, quantityUSD):
         logging.info(f"Attempting to buy {symbol} with {quantityUSD} USDT at market price.")
 
         # Get the current price
-        ticker = client.ticker_price(symbol=symbol, recvWindow=6000)
+        ticker = client.ticker_price(symbol=symbol)
         current_price = float(ticker["price"])
 
         logging.debug(f"Current price of {symbol}: {current_price}")
@@ -147,11 +144,19 @@ def buy_crypto_market(symbol, quantityUSD):
         # Calculate the quantity to buy
         if quantity >= 1:
             quantity = int(quantity)
+        else:
+            quantity_str = str(quantity)
+            decimal_part = quantity_str.split('.')[1] if '.' in quantity_str else '0'
+            first_nonzero_index = next((i for i, digit in enumerate(decimal_part) if digit != '0'), None)
+            round_param = first_nonzero_index + 2
+            quantity = round(quantity,round_param)
+
         
         # Create the order
         order = client.new_order(
             symbol=symbol,
             side="BUY",
+            positionSide='LONG',
             type="MARKET",
             quantity=quantity,
             recvWindow=6000
@@ -175,4 +180,6 @@ def buy_crypto_market(symbol, quantityUSD):
         return None
 
 if __name__ == "__main__":
-    get_account_status()
+    open_positions, usdt_balance = get_account_status()
+    # buy_crypto_market("ETHUSDT", 50)
+    sell_crypto_market("ETHUSDT", 0.14)
