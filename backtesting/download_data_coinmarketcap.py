@@ -88,7 +88,10 @@ def get_snapshot_data(url):
         price_td = cells[4]
         symbol_text = symbol_td.get_text(strip=True)
         price_text_raw = price_td.get_text(strip=True)
-        price_value = float(price_text_raw.replace("$", "").replace(",", ""))
+        if price_text_raw == "--":
+            price_value = 0
+        else:
+            price_value = float(price_text_raw.replace("$", "").replace(",", ""))
         data.append({
             "date": snapshot_date,
             "name": symbol_text,
@@ -110,12 +113,13 @@ def main():
             snapshot_str = match.group(1)  
             snapshot_int = int(snapshot_str)  
             # Check if the link is within the specified interval 
-            if 20130601 <= snapshot_int <= 20181231:
+            if 20240101 <= snapshot_int <= 20241229:
                 filtered_links.append(link)
 
     all_data = []
     # 2. For each link, scrape and collect the data
     for link in filtered_links:
+
         snapshot_data = get_snapshot_data(link)
         all_data.extend(snapshot_data)
         print(link)
